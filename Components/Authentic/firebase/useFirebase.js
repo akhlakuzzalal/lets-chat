@@ -16,12 +16,14 @@ const useFirebase = () => {
   //   onstate change
   function onAuthStateChanged(user) {
     setUser(user);
+    setLoading(false);
     if (initializing) {
       setInitializing(false);
     }
   }
 
   useEffect(() => {
+    setLoading(true);
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
@@ -51,7 +53,18 @@ const useFirebase = () => {
       .then(() => setUser({}));
   };
   return [
-    {user, createAccount, logOut, error, setError, logIn, setUser, setError},
+    {
+      user,
+      loading,
+      createAccount,
+      logOut,
+      error,
+      setError,
+      logIn,
+      setUser,
+      setError,
+      setLoading,
+    },
   ];
 };
 

@@ -4,6 +4,7 @@ import {Controller, useForm} from 'react-hook-form';
 import {StyleSheet, Text, View} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 import {Link, useHistory} from 'react-router-native';
+import axios from '../axios';
 import {SocketContext} from '../Context/ControlContext';
 
 const Registration = () => {
@@ -19,6 +20,7 @@ const Registration = () => {
   } = useForm({
     defaultValues: {
       email: '',
+      name: '',
       password: '',
       password2: '',
     },
@@ -35,13 +37,17 @@ const Registration = () => {
     }, 4000);
   }
   const onSubmit = data => {
+    const {email, name} = data;
     if (data.password === data.password2) {
       if (firebase) {
         createAccount(data.email, data.password)
           .then(data => {
             setUser(data.user);
-            history.push('/home');
+            axios
+              .put('/user/create', {email: email, name: name})
+              .then(res => console.log(res.data));
             reset();
+            history.push('/');
           })
           .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
@@ -80,6 +86,22 @@ const Registration = () => {
                 />
               )}
               name="email"
+            />
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <TextInput
+                  label={'Name'}
+                  style={style.input}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="name"
             />
             {errors.email && <Text style={style.error}>This is required.</Text>}
 
@@ -157,7 +179,7 @@ const style = StyleSheet.create({
     marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -60,
+    marginTop: -20,
   },
   input: {
     width: '100%',

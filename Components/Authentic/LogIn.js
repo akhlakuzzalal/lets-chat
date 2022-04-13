@@ -26,7 +26,7 @@ const LogIn = () => {
       logIn(data.email, data.password)
         .then(data => {
           setUser(data.user);
-          history.push('/home');
+          history.push('/');
         })
         .catch(error => {
           console.log(error.code);
